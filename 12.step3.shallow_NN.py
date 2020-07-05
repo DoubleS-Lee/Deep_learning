@@ -1,3 +1,5 @@
+#얕은 신경망 학습
+
 import numpy as np
 import matplotlib.pyplot as plt
 

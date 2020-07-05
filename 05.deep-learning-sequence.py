@@ -1,3 +1,5 @@
+#딥러닝 순서
+
 import tensorflow as tf
 
 # 하이퍼파라미터 설정
