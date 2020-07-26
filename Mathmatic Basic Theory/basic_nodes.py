@@ -25,8 +25,8 @@ class minus_node:
         self._z = None
 
     def forward(self, x, y):
-        self._x, self_y = x, y
-        self._z = self._x - self_y
+        self._x, self._y = x, y
+        self._z = self._x - self._y
         return self._z
     
     # dJ/dx = dJ/dz*dz/dx = dJ/dz*1 이다
