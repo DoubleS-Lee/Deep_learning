@@ -10,7 +10,7 @@ fontpath = 'c:/Windows/Fonts/맑은 고딕.ttf'
 font = fm.FontProperties(fname=fontpath, size=10)
 fm._rebuild()
 
-%config InlineBackend.figure_format = 'retina'
+#%config InlineBackend.figure_format = 'retina'
 
 plt.rc('font', family = 'NanumBarunGothic')
 
@@ -51,11 +51,19 @@ df['분양가'].plot(kind='kde')
 xx = df.loc[(df['분양가'] > 1000) & (df['분양가'] <2000)]
 df.plot(kind='hexbin', x='분양가', y='연도', gridsize=20)
 
+# 박스 플롯
+df_seoul = df.loc[df['지역'] == '서울']
+df_seoul['분양가'].plot(kind='box')
 
+# area plot
+df.groupby('월')['분양가'].count().plot(kind='line')
+df.groupby('월')['분양가'].count().plot(kind='area')
 
+# pie plot
+df.groupby('월')['분양가'].count().plot(kind='pie')
 
-
-
+# scatter plot
+df.plot(x='월', y='분양가', kind='scatter')
 
 
 
