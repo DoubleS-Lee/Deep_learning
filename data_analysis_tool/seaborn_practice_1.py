@@ -45,13 +45,13 @@ plt.show()
 
 #%%
 ### 0-2. 아름다운 스타일링
-
+'''
 seaborn의 최대 장점 중 하나인, 아름다운 컬러팔레트입니다.
 
 제가 최대 장점으로 꼽은 이유는, 
 
 `matplotlib`의 기본 컬러 색상보다 `seaborn`은 스타일링에 크게 신경을 쓰지 않아도 **default 컬러가 예쁘게 조합**해 줍니다.
-
+'''
 plt.bar(tips['day'], tips['total_bill'])
 plt.show()
 

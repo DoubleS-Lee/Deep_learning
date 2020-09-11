@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 ## Pytorch 첫만남
 '''
 우리에게 아래와 같은 간단한 선형식이 주어져있다고 생각해볼까요?
-$$ y = wx $$ 
+$$ y = wx $$
 
 그러면 $\frac{\partial y}{\partial w}$ 을 어떻게 계산 할 수 있을까요?
 일단 직접 미분을 해보면$\frac{\partial y}{\partial w} = x$ 이 되니, 간단한
@@ -52,7 +52,7 @@ x.grad
 '''
 `nn.Linear` 은 앞서 배운 선형회귀 및 다층 퍼셉트론 모델의 한 층에 해당하는 파라미터 $w$, $b$ 를 가지고 있습니다. 예시로 입력의 dimension 이 10이고 출력의 dimension 이 1인 `nn.Linear` 모듈을 만들어 봅시다!
 '''
-lin = nn.Linear(in_features=10, out_features=1)
+lin = nn.Linear(in_features=10, out_features=2)
 
 for p in lin.parameters():
     print(p)

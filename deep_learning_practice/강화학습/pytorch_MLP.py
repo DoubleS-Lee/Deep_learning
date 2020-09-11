@@ -1,4 +1,4 @@
-import sys; sys.path.append('C:/Users/Seohee/Documents/01.강의자료/모델성능개선으로 익히는 강화학습/ReinforcementLearningAtoZ-master') # add project root to the python path
+import sys; sys.path.append('C:/Users/DoubleS/Documents/[패캠]딥러닝-인공지능-강의자료/강화학습/ReinforcementLearningAtoZ-master') # add project root to the python path
 
 import numpy as np
 import torch
