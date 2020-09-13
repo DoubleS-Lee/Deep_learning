@@ -64,6 +64,8 @@ class TDAgent:
 
     def sample_update(self, state, action, reward, next_state, done):
         # 1-step TD target
+        # next_state가 terminal이라면 done은 1이 된다 (즉 terminal state의 value는 0이된다)
+        # td_target은 G_t이고, self.v[state]는 V(s)이다
         td_target = reward + self.gamma * self.v[next_state] * (1 - done)
         self.v[state] += self.lr * (td_target - self.v[state])
 

@@ -7,6 +7,11 @@ class ExactMCAgent:
     This agents performs value update as follows:
     V(s) <- s(s) / n(s)
     Q(s,a) <- s(s,a) / n(s,a)
+    
+    1. `gamma` : 감가율
+    2. `num_states` : 상태공간의 크기 (서로 다른 상태의 갯수)
+    3. `num_actions` : 행동공간의 크기 (서로 다른 행동의 갯수)
+    4. `epsilon`: $\epsilon$-탐욕적 정책의 파라미터
     """
 
     def __init__(self,
@@ -18,7 +23,9 @@ class ExactMCAgent:
         self.num_states = num_states
         self.num_actions = num_actions
         self.epsilon = epsilon
-
+        
+        # e-greedy에 사용되는 값은 아니고 G(s)를 N(s)로 나눠줄때 N(s)가 0에 가까울 경우 계산상의 오류를 방지하기 위해 더해주는 값
+        # _는 보통 외부에서 사용되지 않고 내부에서만 사용되는 변수에 대해 붙여주는 경향이 있다
         self._eps = 1e-10  # for stable computation of V and Q. NOT the one for e-greedy !
 
         # Initialize statistics
@@ -74,11 +81,13 @@ class ExactMCAgent:
 
             self.n_v[s] += 1
             self.n_q[s, a] += 1
-
+            
+            # 리턴(G)을 s라고 표기함
             self.s_v[s] += cum_r
             self.s_q[s, a] += cum_r
 
     def compute_values(self):
+        # self.n_v와 self.n_q가 0에 수렴할 수도 있기때문에 아주 작은 값인 _eps를 더해준다
         self.v = self.s_v / (self.n_v + self._eps)
         self.q = self.s_q / (self.n_q + self._eps)
 
