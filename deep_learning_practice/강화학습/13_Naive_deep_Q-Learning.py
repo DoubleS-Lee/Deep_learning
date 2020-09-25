@@ -1,4 +1,4 @@
-import sys; sys.path.append('C:/Users/Seohee/Documents/01.강의자료/모델성능개선으로 익히는 강화학습/ReinforcementLearningAtoZ-master') # add project root to the python path
+import sys; sys.path.append('C:/Users/DoubleS/Documents/Deep_learning/deep_learning_practice/강화학습') # add project root to the python path
 
 import gym
 import numpy as np
@@ -17,54 +17,75 @@ YouTubeVideo(cartpole_link, width=800, height=500)
 
 ## `CartPole-v1` MDP 알아보기
 '''
-* openai gym `cartpole.py`의 내용을 참조하여 작성되었습니다. 원문은 [여기](https://github.com/openai/gym/blob/master/gym/envs/classic_control/cartpole.py)에서 찾아보실 수 있습니다.
-<br>
-
+* openai gym `cartpole.py`의 내용을 참조하여 작성되었습니다. 
+원문은 [여기](https://github.com/openai/gym/blob/master/gym/envs/classic_control/cartpole.py)에서 찾아보실 수 있습니다.
+'''
 ### `CartPole-v1`  MDP에 적용되는 물리법칙
+### 사실 강화학습 관점에서는 몰라도 되는 내용이다
+'''
 1. 카트는 마찰이 없는 평면의 트랙위에서 움직인다.
 2. 전체 시스템에는 중력이 작용한다. 따라서, 가만히 카트를 두면 막대 (pole)가 떨어진다.
-
+'''
 ### 인간의 직관을 이용한 솔루션
+'''
 > ???: 적당히 왼쪽 오른쪽으로 움직여 주면 되겠군...
-
+'''
 
 ### MDP의 목적
-`CartPole-v1` MDP의 Goal은 카트에 달린 막대를 최대한 오랫동안 __세워두는__ 것입니다. __'세워둔다'__ 의 정의는 막대가 수직으로 부터 15&deg; 이내에 있게 유지하는 것입니다. 추가적으로 평면의 중심에서 2.4 unit 이상 멀어지면 떨어진것으로 간주됩니다.
-
-### 상태 $s$, 행동 $a$, 보상 $r$, 감소율 $\gamma$
-
->`CartPole-v1` MDP 는 다음과 같은 4-dimensional 상태 $s$ 를 가집니다.
+'''
+`CartPole-v1` MDP의 Goal은 카트에 달린 막대를 최대한 오랫동안 __세워두는__ 것입니다.
+__'세워둔다'__ 의 정의는 막대가 수직으로 부터 15deg 이내에 있게 유지하는 것입니다. 
+추가적으로 평면의 중심에서 2.4 unit 이상 멀어지면 떨어진것으로 간주됩니다.
+'''
+### 상태 s, 행동 a, 보상 r, 감소율 gamma
+'''
+# 상태 s (discrete 하지 않고 연속적이어서 함수 근사 방법을 사용해야만 한다)
+>`CartPole-v1` MDP 는 다음과 같은 4-dimensional 상태 s 를 가집니다.
 1. x : 카트의 위치
 2. θ : 막대의 수직 각도
 3. dx/dt : 카트의 속도
 4. dθ/dt : 막대의 각속도
 
->`CartPole-v1` MDP 는 다음과 같은 1-dimensional 상태 $a$ 를 가집니다. <br>
+# 행동 a
+>`CartPole-v1` MDP 는 다음과 같은 1-dimensional 상태 a 를 가집니다.
 +1, -1 으로 카트에 힘을 가하기. (좌/우로 1의 힘을 가함)
 
->`CartPole-v1` MDP 는 매 1tick `step()` 마다 1.0 의 보상 $r$ 을 받습니다.
+# 보상 r
+>`CartPole-v1` MDP 는 매 1tick `step()` 마다 1.0 의 보상 r 을 받습니다.
 
->`CartPole-v1` MDP 감소율 $\gamma$ 이 1.0 입니다.
-
-### `CartPole-v1` MDP 를 "풀었다" ?
-`CartPole-v1` MDP에서 100회 연속적으로 195.0의 cumulative reward 를 얻으면, `CartPole-v1` MDP를 "풀었다"라고 정의합니다.
+# 감소율 gamma
+>`CartPole-v1` MDP 감소율 gamma 이 1.0 입니다.
 '''
-## 랜덤 액션으로 'CartPole-v1' 확인하기
+### `CartPole-v1` MDP 를 "풀었다" ?
+'''
+`CartPole-v1` MDP에서 100회 연속적으로 195.0의 cumulative reward 를 얻으면, 
+`CartPole-v1` MDP를 "풀었다"라고 정의합니다.
+'''
 
+## 랜덤 액션으로 'CartPole-v1' 확인하기
 cartpole_link = '4fR836k_T40'
 YouTubeVideo(cartpole_link, width=800, height=500)
 
 env = gym.make('CartPole-v1')
 env.reset()
 for _ in range(1000):
-    #env.render() # rendering the outcomes
+    env.render() # rendering the outcomes
+    # 랜덤하게 다음 행동을 던져준다
     env.step(env.action_space.sample()) # take a random action
 env.close()
 
-## 상태공간 $\mathcal{S}$ 및 행동공간 $\mathcal{A}$ 확인하기
+
+## 상태공간 mathcal{S} 및 행동공간 mathcal{A} 확인하기
 '''
-OpenAI gym의 환경이니 모름지기 표준화된 interface를 제공하겠죠? 한번 상태공간과 행동공간에 대해서 확인해볼까요?
+OpenAI gym의 환경이니 모름지기 표준화된 interface를 제공하겠죠? 
+한번 상태공간과 행동공간에 대해서 확인해볼까요?
 '''
+# 상태공간과 행동공간의 Dimension을 체크한다
+env.observation_space
+env.observation_space.shape[0]
+env.action_space
+env.action_space.n
+
 s_dim = env.observation_space.shape[0]
 a_dim = env.action_space.n
 
@@ -73,15 +94,23 @@ print("action space dimension: {}".format(a_dim))
 
 ## Deep Q-Network (DQN): 퍼스트 컨택트
 '''
-드디어 <파트 3. 함수 근사기법>에서 배운것들이 강화학습과에 처음으로 사용되는 순간입니다! 딥러닝을 이용해서 Q-Learning을 진행해볼까요?
+드디어 <파트 3. 함수 근사기법>에서 배운것들이 강화학습과에 처음으로 사용되는 순간입니다! 
+딥러닝을 이용해서 Q-Learning을 진행해볼까요?
 
 일단 Function approximation을 활용한 Q-Learning의 의사 코드를 살펴봅시다.
 
-<img src="./images/ql_fa.png" width="70%" height="40%" title="q_learning_with_fa" alt="ql_fa"></img>
+임의의 파라미터 pi로 Q_phi(s.a) 초기화
+반복(에피소드)
+    초기상태 s 관측
+    반복(에피소드내에서)
+        행동 a를 Q(s,a)를 활용해서 결정  <- 행동정책 mu
+        행동 a를 환경에 가한 후 r,s'를 관측
+        & = r + gamma*max{a'}Q_{phi}(s',a)-Q_{phi}(s,a)  <- 타겟으로 생각 = loss 즉 &를 최소화해야함
+        phi <- phi - alpha * d&/dphi
+        s <- s'
+    까지 s이 종결상태   
 
-비교를 위해서 Funciton approximation을 활용하지 않는 경우도 확인 해볼까요?
 
-<img src="../part2/images/q_learning.png" width="70%" height="40%" title="q_learning_with_fa" alt="ql"></img>
 '''
 ## NaiveDQN 을 구현해봅시다!
 '''
@@ -112,6 +141,7 @@ class NaiveDQN(nn.Module):
 
         if self.train:  # epsilon-greedy policy
             prob = np.random.uniform(0.0, 1.0, 1)
+            # numpy 데이터는 torch와 호환이 안되기 때문에 torch형 데이터로 바꿔준다
             if torch.from_numpy(prob).float() <= self.epsilon:  # random
                 action = np.random.choice(range(self.action_dim))
             else:  # greedy
@@ -136,7 +166,8 @@ class NaiveDQN(nn.Module):
             q_max, _ = self.qnet(next_state).max(dim=-1)
             q_target = r + self.gamma * q_max * (1 - done)
         """
-
+        
+        # 실제로 loss를 계산///// self.qnet(s)[0, a] <- 현재 상태 s에 대한 q값
         loss = self.criteria(self.qnet(s)[0, a], q_target)
         self.opt.zero_grad()
         loss.backward()
@@ -157,7 +188,10 @@ agent = NaiveDQN(state_dim=s_dim,
 
 ### Training 동안에 모델의 성능을 평가하는 metric을 하나 만들어봅시다.
 '''
-Q-Learning (따라서, DQN도 포함) 은 행동 정책과 평가의 대상인 타겟 정책이 다릅니다. 따라서, 학습 중간에 모델을 평가하기 위해서는 Agent의 Test behaviour를 사용하는 것이 맞겠죠?
+Q-Learning (따라서, DQN도 포함) 은 행동 정책과 평가의 대상인 타겟 정책이 다릅니다.
+Agent의 Test behavior와 data를 모으는 behavior가 다르기 때문
+Q-Learning의 경우 Test behavior는 greedy policy, data를 모으는 behavior는 epsilon-greedy policy이다
+따라서, 학습 중간에 모델을 평가하기 위해서는 Agent의 Test behaviour를 사용하는 것이 맞겠죠?
 
 예를 들어,
 ``` python
@@ -175,10 +209,15 @@ for i in range(n_eps): # total training loop
         agent.train() # set agent back to the train mode.      
 ```
 
-하지만, 이렇게 구현을 하면 모델의 evaluation 에 대한 시간적 비용이 상당히 큰 경우들이 많습니다. 그래서 많은 경우에, 모델의 성능을 평가하기 위해서 여태까지 얻었던 에피소드 리턴 --하나의 에피소드에서 얻은 리워드들의 (감가) 합-- 을 사용합니다. 
+하지만, 이렇게 구현을 하면 모델의 evaluation 에 대한 시간적 비용이 상당히 큰 경우들이 많습니다. 
+그래서 많은 경우에, 모델의 성능을 평가하기 위해서 
+여태까지 얻었던 에피소드 리턴 --하나의 에피소드에서 얻은 리워드들의 (감가) 합-- 을 사용합니다. 
 
+에피소드들의 return을 지수 이동평균법을 사용하도록 한다
+이유 : 에피소드들의 리턴이 너무 변화폭이 크기 때문
 이번 예제에서는 지수 이동평균법으로 모델의 성능변화를 추적해보도록하죠.
 '''
+# 지수 평균법
 class EMAMeter:
     
     def __init__(self, 
@@ -221,14 +260,15 @@ for ep in range(n_eps):
 env.close()
 '''
 시간이 오래걸릴거에요! 포기하지 마세요 :)
-
+'''
 ## 다른 사람들의 기록은 어떨까?
-
+'''
 [openai gym 사이트](https://gym.openai.com/envs/CartPole-v0/)에 방문하면 다른 사람들의 기록도 확인해볼 수 있습니다.
-
+'''
 ## 오랜날 오랜밤 그댈 훈련했어요.
-
-많은 머신러닝 모델 그리고 강화학습 모델은 더욱 그러하듯, 모델의 훈련에 생각보다 많은 시간 및 연산자원이 필요합니다. 그래서 훈련된 모델을 잘 저장하는 것이 필요합니다. 파이토치 모델을 저장하는 법을 알아볼까요?
+'''
+많은 머신러닝 모델 그리고 강화학습 모델은 더욱 그러하듯, 모델의 훈련에 생각보다 많은 시간 및 연산자원이 필요합니다. 
+그래서 훈련된 모델을 잘 저장하는 것이 필요합니다. 파이토치 모델을 저장하는 법을 알아볼까요?
 
 > 모델을 `nn.Module` 을 상속받아서 만들었다고 가정합니다.
 '''
@@ -240,9 +280,11 @@ torch.save(agent.state_dict(), SAVE_PATH)
 agent.state_dict()
 
 ### 모델 불러오기
-
-`nn.Module`의 `state_dict()`은 모델의 파라미터 값 및 버퍼의 값들만을 저장합니다. `state_dict()` 자체에는 모델의 구조 및 연산 과정등을 저장하지 않습니다. 따라서 모델을 불러올 때는 저장한 모델과 같은 구조를 가진 모델을 만들고, 그 모델에 디스크에서 불러온 `state_dict()` 를 덮어씌우는 형태로 구현됩니다.
-
+'''
+`nn.Module`의 `state_dict()`은 모델의 파라미터 값 및 버퍼의 값들만을 저장합니다. 
+`state_dict()` 자체에는 모델의 구조 및 연산 과정등을 저장하지 않습니다. 
+따라서 모델을 불러올 때는 저장한 모델과 같은 구조를 가진 모델을 만들고, 그 모델에 디스크에서 불러온 `state_dict()` 를 덮어씌우는 형태로 구현됩니다.
+'''
 qnet2 = MLP(input_dim=s_dim,
             output_dim=a_dim,
             num_neurons=[128],

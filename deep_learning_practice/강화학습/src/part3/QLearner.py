@@ -28,6 +28,7 @@ class NaiveDQN(nn.Module):
 
         if self.train:  # epsilon-greedy policy
             prob = np.random.uniform(0.0, 1.0, 1)
+            # numpy 데이터는 torch와 호환이 안되기 때문에 torch형 데이터로 바꿔준다
             if torch.from_numpy(prob).float() <= self.epsilon:  # random
                 action = np.random.choice(range(self.action_dim))
             else:  # greedy

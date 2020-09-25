@@ -53,6 +53,7 @@ class REINFORCE(nn.Module):
             # Don't forget to put '-' in the front of pg_loss !!!!!!!!!!!!!!!!
             # the default behavior of pytorch's optimizer is to minimize the targets
             # add 'self_eps' to prevent numerical problems of logarithms
+            # 여기서의 loss는 maximize가 되어야 하기 때문에 앞에 -를 붙여준다
             pg_loss = - torch.log(prob + self._eps) * g
 
             self.opt.zero_grad()
